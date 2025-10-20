@@ -60,8 +60,8 @@ folders = (
     "OraytaToOtzaria/ספרים/אוצריא",
     "sefariaToOtzaria/ספרים/אוצריא",
     "tashmaToOtzaria/ספרים/אוצריא",
-    "sefaria and more",
-    "MoreBooks"
+    "sefariaToOtzaria/sefaria_export/אוצריא",
+    "MoreBooks/ספרים/אוצריא",
 )
 
 with open("SourcesBooks.csv", "w", newline="", encoding="utf-8") as csvfile:
