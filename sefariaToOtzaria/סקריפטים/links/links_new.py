@@ -25,15 +25,15 @@ class Link(TypedDict):
 OtzariaLink = TypedDict("OtzariaLink", {"line_index_1": int, "line_index_2": int, "heRef_2": str, "path_2": str, "Conection Type": str})
 
 
-LINKS_PATH = r"C:\Users\User\Desktop\links"
+LINKS_PATH = r"\\wsl.localhost\Ubuntu\root\Sefaria-Export\links"
 set_links: set[str] = set()
 set_range: set[str] = set()
 otzaria_links: defaultdict[str, list[list[str]]] = defaultdict(list)
 otzaria_parse: defaultdict[str, list[Link]] = defaultdict(list)
 all_otzaria_links: defaultdict[str, list[list[str]]] = defaultdict(list)
 final_links: defaultdict[str, list[OtzariaLink]] = defaultdict(list)
-target_links_path = r"C:\Users\User\Desktop\אוצריא\links"
-refs_file_path = r"C:\Users\User\Desktop\אוצריא\refs_all.csv"
+target_links_path = r"C:\Users\Otzaria\Desktop\otzaria\links"
+refs_file_path = r"C:\Users\Otzaria\Desktop\otzaria\refs_all.csv"
 not_found_links: set[str] = set()
 not_found_books: set[str] = set()
 found_links: set[str] = set()
@@ -294,15 +294,15 @@ for key, values in final_links.items():
 print(f"{len(set_links)=} {len(set_range)=} {len(otzaria_links)=}")
 # # print(set_links)
 
-with open("otzaria_links_found_2.json", "w", encoding="utf-8") as f:
+with open(r"C:\Users\Otzaria\Desktop\otzaria\otzaria_links_found_2.json", "w", encoding="utf-8") as f:
     json.dump(found_links_dict, f, ensure_ascii=False, indent=4)
 
-with open("not_found_links_2.txt", "w", encoding="utf-8") as f:
+with open(r"C:\Users\Otzaria\Desktop\otzaria\not_found_links_2.txt", "w", encoding="utf-8") as f:
     for link in not_found_links:
         f.write(f"{link}\n")
-with open("not_found_books_2.txt", "w", encoding="utf-8") as f:
+with open(r"C:\Users\Otzaria\Desktop\otzaria\not_found_books_2.txt", "w", encoding="utf-8") as f:
     for book in not_found_books:
         f.write(f"{book}\n")
-with open("found_links_2.txt", "w", encoding="utf-8") as f:
+with open(r"C:\Users\Otzaria\Desktop\otzaria\found_links_2.txt", "w", encoding="utf-8") as f:
     for book in found_links:
         f.write(f"{book}\n")

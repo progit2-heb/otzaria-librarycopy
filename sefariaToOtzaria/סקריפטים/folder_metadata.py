@@ -1,7 +1,7 @@
 import json
 
-toc_file_path = r"C:\Users\User\Downloads\table_of_contents.json"
-folder_metadata_file_path = r"C:\Users\User\Downloads\folder_metadata.json"
+toc_file_path = r"\\wsl.localhost\Ubuntu\root\Sefaria-Export\table_of_contents.json"
+folder_metadata_file_path = r"C:\Users\Otzaria\Desktop\otzaria\folder_metadata.json"
 
 
 def recursive_register_categories(category: list | dict, data: list | None = None) -> list[dict]:

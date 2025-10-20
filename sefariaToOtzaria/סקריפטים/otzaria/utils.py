@@ -37,8 +37,8 @@ def recursive_register_categories(
 
 
 def sanitize_filename(filename: str) -> str:
-    sanitized_filename = re.sub(r'[\\/:*"?<>|]', "", filename)
-    sanitized_filename = sanitized_filename.replace("_", " ")
+    sanitized_filename = re.sub(r'[\\/:*"״?<>|]', "", filename)
+    sanitized_filename = sanitized_filename.replace("_", " ").replace("''", "")
     return sanitized_filename.strip()
 
 

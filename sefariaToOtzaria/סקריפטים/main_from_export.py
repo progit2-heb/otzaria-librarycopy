@@ -103,32 +103,32 @@ def main(json_folder, schemas_folder, output_folder, lang: str):
                         with open(json_file, "w", encoding="utf-8") as file:
                             json.dump(dict_links, file)
                 except Exception as e:
-                    with open("error.txt", "a", encoding="utf-8") as f:
+                    with open(r"C:\Users\Otzaria\Desktop\otzaria\error.txt", "a", encoding="utf-8") as f:
                         f.write(f"{file_path} {e}\n")
 
 
-toc_file_path = r"F:\Sefaria-Export\table_of_contents.json"
+toc_file_path = r"\\wsl.localhost\Ubuntu\root\Sefaria-Export\table_of_contents.json"
 with open(toc_file_path, "r", encoding="utf-8") as f:
     toc = json.load(f)
 toc_content = recursive_register_categories(toc)
 all_metadata = {}
-json_folder = r"F:\Sefaria-Export\json"
-schemas_folder = r"F:\Sefaria-Export\schemas"
-files_black_list_file_path = r""
-authors_black_files_list_file_path = r""
+json_folder = r"\\wsl.localhost\Ubuntu\root\Sefaria-Export\json"
+schemas_folder = r"\\wsl.localhost\Ubuntu\root\Sefaria-Export\schemas"
+files_black_list_file_path = r"C:\Users\Otzaria\Desktop\ייצוא\ספרים.TXT"
+authors_black_files_list_file_path = r"C:\Users\Otzaria\Desktop\ייצוא\מחברים.TXT"
 files_black_list = read_file(files_black_list_file_path)
 authors_black_list = read_file(authors_black_files_list_file_path)
 # output_folder = os.path.join("אוצריא", "אוצריא")
-output_folder = r"C:\Users\User\Desktop\אוצריא\אוצריא"
+output_folder = r"C:\Users\Otzaria\Desktop\otzaria"
 os.makedirs(output_folder, exist_ok=True)
 # links_path = os.path.join("אוצריא", "links")
-links_path = r"C:\Users\User\Desktop\אוצריא\links"
+links_path = r"C:\Users\Otzaria\Desktop\otzaria\links"
 os.makedirs(links_path, exist_ok=True)
 lang = "hebrew"
 refs_list = []
 main(json_folder=json_folder, schemas_folder=schemas_folder,
      output_folder=output_folder, lang=lang)
 df = pd.DataFrame(refs_list)
-df.to_csv(r"C:\Users\User\Desktop\אוצריא\refs_all.csv", index=False)
-with open(r"C:\Users\User\Desktop\אוצריא\books_metadata.json", "w", encoding="utf-8") as f:
+df.to_csv(r"C:\Users\Otzaria\Desktop\otzaria\refs_all.csv", index=False)
+with open(r"C:\Users\Otzaria\Desktop\otzaria\books_metadata.json", "w", encoding="utf-8") as f:
     json.dump(all_metadata, f, ensure_ascii=False, indent=4)

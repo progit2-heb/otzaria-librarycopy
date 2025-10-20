@@ -1,11 +1,11 @@
 import json
 import os
 
-meta_data_file_path = r"C:\Users\Otzaria\Desktop\ייצוא\metadata1.json"
-files_folder_path = r"C:\Users\Otzaria\Desktop\ייצוא\אוצריא"
+meta_data_file_path = r"C:\Users\Otzaria\Desktop\otzaria\books_metadata.json"
+files_folder_path = r"C:\Users\Otzaria\Desktop\otzaria"
 black_list_files_path = r"C:\Users\Otzaria\Desktop\ייצוא\ספרים.txt"
 black_authors_file_path = r"C:\Users\Otzaria\Desktop\ייצוא\מחברים.txt"
-links_folder = r"C:\Users\Otzaria\Desktop\ייצוא\links"
+links_folder = r"C:\Users\Otzaria\Desktop\otzaria\links"
 
 
 def read_file(file_path: str) -> set[str]:
@@ -22,7 +22,8 @@ for key, value in data.items():
     authors = value.get("heAuthors", [])
     title = value["title"]
     if (title in black_list) or any(author in black_authors for author in authors):
-        file_path = key.replace("C:\\Users\\Otzaria\\Desktop\\ייצוא", files_folder_path) + ".txt"
+        # file_path = key.replace("C:\\Users\\Otzaria\\Desktop\\ייצוא", files_folder_path) + ".txt"
+        file_path = key + ".txt"
         file_name = key.split("\\")[-1]
         if os.path.exists(file_path):
             os.remove(file_path)
