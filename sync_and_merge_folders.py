@@ -58,9 +58,9 @@ folders = (
     "DictaToOtzaria/ספרים/ערוך/אוצריא",
     "OnYourWayToOtzaria/ספרים/אוצריא",
     "OraytaToOtzaria/ספרים/אוצריא",
-    "sefariaToOtzaria/ספרים/אוצריא",
     "tashmaToOtzaria/ספרים/אוצריא",
-    "sefariaToOtzaria/sefaria_export/אוצריא",
+    "sefariaToOtzaria/sefaria_export/ספרים/אוצריא",
+    "sefariaToOtzaria/sefaria_api/ספרים/אוצריא",
     "MoreBooks/ספרים/אוצריא",
 )
 
