@@ -1,12 +1,14 @@
 import csv
 import json
-import os
 from collections import defaultdict
 from collections.abc import Generator
 from copy import deepcopy
+from pathlib import Path
 from typing import TypedDict
 
 from tqdm import tqdm
+
+from .utils import CONFIG
 
 
 class Link(TypedDict):
@@ -25,15 +27,15 @@ class Link(TypedDict):
 OtzariaLink = TypedDict("OtzariaLink", {"line_index_1": int, "line_index_2": int, "heRef_2": str, "path_2": str, "Conection Type": str})
 
 
-LINKS_PATH = r"\\wsl.localhost\Ubuntu\root\Sefaria-Export\links"
+LINKS_PATH = Path(CONFIG["sefaria"]["links_folder"])
 set_links: set[str] = set()
 set_range: set[str] = set()
 otzaria_links: defaultdict[str, list[list[str]]] = defaultdict(list)
 otzaria_parse: defaultdict[str, list[Link]] = defaultdict(list)
 all_otzaria_links: defaultdict[str, list[list[str]]] = defaultdict(list)
 final_links: defaultdict[str, list[OtzariaLink]] = defaultdict(list)
-target_links_path = r"C:\Users\Otzaria\Desktop\otzaria\links"
-refs_file_path = r"C:\Users\Otzaria\Desktop\otzaria\refs_all.csv"
+target_links_path = Path(CONFIG["otzaria"]["export_links_path"])
+refs_file_path = Path(CONFIG["otzaria"]["refs_all_file_path"])
 not_found_links: set[str] = set()
 not_found_books: set[str] = set()
 found_links: set[str] = set()
@@ -142,11 +144,10 @@ def split_link(link: str) -> Link:
 
 
 def read_links() -> Generator[list[str]]:
-    for file in os.listdir(LINKS_PATH):
-        if not file.lower().endswith(".csv"):
+    for file in LINKS_PATH.iterdir():
+        if not file.name.lower().endswith(".csv"):
             continue
-        file_path = os.path.join(LINKS_PATH, file)
-        with open(file_path, "r", encoding="utf-8", newline="") as f:
+        with file.open("r", encoding="utf-8", newline="") as f:
             reader = csv.reader(f)
             headers = next(reader)
             if headers[0] != "Citation 1" or headers[1] != "Citation 2":
@@ -163,7 +164,7 @@ for line in read_links():
             set_links.add(line[i].strip())
 
 print(f"{len(set_links)=} {len(set_range)=}")
-with open(refs_file_path, "r", encoding="utf-8", newline="") as f:
+with refs_file_path.open("r", encoding="utf-8", newline="") as f:
     reader = csv.reader(f)
     headers = next(reader)
     print(headers)
@@ -280,29 +281,35 @@ for line in read_links():
         final_links[link[3]].extend([{"line_index_1": int(link[2]), "line_index_2": int(link_2_link[2]), "heRef_2": link_2_link[1], "path_2": f"{link_2_link[3]}.txt", "Conection Type": line[2]}
                                      for link_2_link in link_1])
 
-os.makedirs(target_links_path, exist_ok=True)
+target_links_path.mkdir(parents=True, exist_ok=True)
 for key, values in final_links.items():
-    target_path = os.path.join(target_links_path, f"{key}_links.json")
-    if os.path.exists(target_path):
-        with open(target_path, "r", encoding="utf-8") as f:
+    target_path = target_links_path / f"{key}_links.json"
+    if target_path.exists():
+        with target_path.open("r", encoding="utf-8") as f:
             existing_values = json.load(f)
         values.extend(existing_values)
-    with open(target_path, "w", encoding="utf-8") as f:
+    with target_path.open("w", encoding="utf-8") as f:
         json.dump(values, f, indent=2, ensure_ascii=False)
 
 
 print(f"{len(set_links)=} {len(set_range)=} {len(otzaria_links)=}")
 # # print(set_links)
 
-with open(r"C:\Users\Otzaria\Desktop\otzaria\otzaria_links_found_2.json", "w", encoding="utf-8") as f:
+log_path = Path(CONFIG["otzaria"]["log_path"])
+log_path.mkdir(parents=True, exist_ok=True)
+otzaria_links_found_2 = log_path / "otzaria_links_found_2.json"
+with otzaria_links_found_2.open("w", encoding="utf-8") as f:
     json.dump(found_links_dict, f, ensure_ascii=False, indent=4)
 
-with open(r"C:\Users\Otzaria\Desktop\otzaria\not_found_links_2.txt", "w", encoding="utf-8") as f:
+not_found_links_2 = log_path / "not_found_links_2.json"
+with not_found_links_2.open("w", encoding="utf-8") as f:
     for link in not_found_links:
         f.write(f"{link}\n")
-with open(r"C:\Users\Otzaria\Desktop\otzaria\not_found_books_2.txt", "w", encoding="utf-8") as f:
+not_found_books_2 = log_path / "not_found_books_2.json"
+with not_found_books_2.open("w", encoding="utf-8") as f:
     for book in not_found_books:
         f.write(f"{book}\n")
-with open(r"C:\Users\Otzaria\Desktop\otzaria\found_links_2.txt", "w", encoding="utf-8") as f:
+found_links_2 = log_path / "found_links_2.txt"
+with found_links_2.open("w", encoding="utf-8") as f:
     for book in found_links:
         f.write(f"{book}\n")

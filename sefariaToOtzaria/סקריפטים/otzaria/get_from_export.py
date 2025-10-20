@@ -1,4 +1,4 @@
-from typing import Optional
+from pathlib import Path
 
 from .utils import has_value, read_json, to_daf, to_eng_daf, to_gematria
 
@@ -8,8 +8,8 @@ class Book:
         self,
         book_title: str,
         lang: str,
-        text_file_path: str,
-        schema_file_path: str,
+        text_file_path: Path,
+        schema_file_path: Path,
         he_title: str | None = None
     ) -> None:
 
@@ -116,7 +116,7 @@ class Book:
             self.process_simple_book(self.schema["schema"]["title"], self.schema["schema"]["heTitle"])
         return self.book_content
 
-    def process_simple_book(self, ref: str, heb_title: Optional[str] = None) -> None:
+    def process_simple_book(self, ref: str, heb_title: str | None = None) -> None:
         if self.section_names_lang == "he":
             section_names = self.schema["schema"].get(
                 "heSectionNames"
@@ -133,7 +133,7 @@ class Book:
             else:
                 print(self.book_title)
 
-    def process_node(self, key: list, node: dict, text: list, level: int = 1, heb_title: Optional[list[str]] = None) -> None:
+    def process_node(self, key: list, node: dict, text: list, level: int = 1, heb_title: list[str] | None = None) -> None:
         if heb_title is None:
             heb_title = []
         node_title = node['heTitle'] if self.section_names_lang == "he" else node["title"]
@@ -174,9 +174,9 @@ class Book:
         text: list,
         depth: int,
         level: int = 0,
-        anchor_ref: Optional[list[str]] = None,
-        heb_anchor_ref: Optional[list[str]] = None,
-        heb_title: Optional[str] = None,
+        anchor_ref: list[str] | None = None,
+        heb_anchor_ref: list[str] | None = None,
+        heb_title: str | None = None,
         links: bool = False,
         letter: str = ""
     ) -> None:

@@ -1,5 +1,6 @@
-import re
 import json
+import re
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 from hebrew_numbers import int_to_gematria
@@ -37,17 +38,17 @@ def recursive_register_categories(
 
 
 def sanitize_filename(filename: str) -> str:
-    sanitized_filename = re.sub(r'[\\/:*"״?<>|]', "", filename)
-    sanitized_filename = sanitized_filename.replace("_", " ").replace("''", "")
-    return sanitized_filename.strip()
+    filename = re.sub(r'[\u0591-\u05C7]', '', filename)
+    filename = re.sub(r'[\\/:*"״?<>|]', "", filename)
+    filename = filename.replace("_", " ").replace("''", "").replace("'", "")
+    return filename.strip()
 
 
 def to_daf(i: int) -> str:
     i += 1
     if i % 2 == 0:
         return to_gematria(i // 2) + '.'
-    else:
-        return to_gematria(i // 2) + ':'
+    return to_gematria(i // 2) + ':'
 
 
 def to_gematria(i: int) -> str:
@@ -72,7 +73,7 @@ def has_value(data: list):
     return any(has_value(item) if isinstance(item, list) else item for item in data)
 
 
-def read_json(file_path: str) -> dict:
+def read_json(file_path: str | Path) -> dict:
     with open(file_path, "r", encoding="utf-8") as f:
         content = json.load(f)
     return content

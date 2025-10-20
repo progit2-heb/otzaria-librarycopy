@@ -1,7 +1,10 @@
 import json
+from pathlib import Path
 
-toc_file_path = r"\\wsl.localhost\Ubuntu\root\Sefaria-Export\table_of_contents.json"
-folder_metadata_file_path = r"C:\Users\Otzaria\Desktop\otzaria\folder_metadata.json"
+from .utils import CONFIG, read_csv_file
+
+toc_file_path = Path(CONFIG["sefaria"]["toc_file"])
+folder_metadata_file_path = Path(CONFIG["otzaria"]["folder_metadata_file_path"])
 
 
 def recursive_register_categories(category: list | dict, data: list | None = None) -> list[dict]:
@@ -22,8 +25,16 @@ def recursive_register_categories(category: list | dict, data: list | None = Non
     return data
 
 
-with open(toc_file_path, 'r', encoding='utf-8') as f:
+with toc_file_path.open('r', encoding='utf-8') as f:
     toc = json.load(f)
+folder_name_replacements_file_path = Path(CONFIG["otzaria"]["folder_name_replacements_file_path"])
+folder_name_replacements = read_csv_file(folder_name_replacements_file_path)
+
 data = recursive_register_categories(toc)
-with open(folder_metadata_file_path, 'w', encoding='utf-8') as f:
+data_copy = data.copy()
+for index, entry in enumerate(data_copy):
+    if entry["title"] in folder_name_replacements:
+        data[index]["title"] = folder_name_replacements[entry["title"]]
+
+with folder_metadata_file_path.open('w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)

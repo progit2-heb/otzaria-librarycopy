@@ -1,15 +1,14 @@
-import os
-import json
 import csv
+import json
+import os
 import traceback
 
 import pandas as pd
-from tqdm import tqdm
-from pyluach import dates
-
-from otzaria.sefaria_api import SefariaApi
 from otzaria.get_from_sefaria import Book
-from otzaria.utils import sanitize_filename, recursive_register_categories, footnotes
+from otzaria.sefaria_api import SefariaApi
+from otzaria.utils import footnotes, recursive_register_categories, sanitize_filename
+from pyluach import dates
+from tqdm import tqdm
 
 
 def new_folder_name() -> tuple[str, str]:
@@ -124,10 +123,10 @@ if __name__ == "__main__":
     old_json_file_path = "toc.json"
     year, month = new_folder_name()
     num = 1
-    target_path = os.path.join("..", "ספרים", "לא ממויין", year, month)
+    target_path = os.path.join("..", "sefaria_api", "ספרים", "לא ממויין", year, month)
     while os.path.exists(target_path):
         num += 1
-        target_path = os.path.join("..", "ספרים", "לא ממויין", year, f"{month}_{num}")
+        target_path = os.path.join("..", "sefaria_api", "ספרים", "לא ממויין", year, f"{month}_{num}")
     eroor_file = os.path.join("eroor", f'{" ".join(target_path.split(os.sep)[-2:])}.log')
     os.makedirs("eroor", exist_ok=True)
     main(get_links, only_new, old_json_file_path, target_path, eroor_file)

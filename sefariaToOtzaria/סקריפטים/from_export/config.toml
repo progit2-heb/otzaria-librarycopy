@@ -1,0 +1,21 @@
+lang = "hebrew"
+[otzaria]
+export_books_path = "C:/Users/User/Desktop/otzaria-library/sefaria-export"
+export_links_path = "C:/Users/User/Desktop/otzaria-library/sefaria-export/links"
+log_path = "C:/Users/User/Desktop/otzaria-library/logs/sefariaToOtzaria"
+refs_all_file_path = "refs_all.txt"
+books_metadata_file_path = "books_metadata.json"
+folder_metadata_file_path = "folder_metadata.json"
+folder_name_replacements_file_path = "folder_name_replacements.csv"
+file_name_replacements_file_path = "file_name_replacements.csv"
+old_books_path = "C:/Users/User/Desktop/otzaria-library/otzaria/books"
+api_books_path = "https://otzar.org/api/v1/book/"
+delete_api_files = false
+
+[sefaria]
+toc_file = "sefaria_toc.json"
+json_folder = "texts"
+schemas_folder = "schemas"
+links_folder = "links"
+files_black_list_file_path = "files_black_list.txt"
+authors_black_files_list_file_path = "authors_black_list.txt"
