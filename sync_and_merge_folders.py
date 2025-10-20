@@ -7,10 +7,10 @@ mapping = {
     "DictaToOtzaria": "Dicta",
     "OnYourWayToOtzaria": "OnYourWay",
     "OraytaToOtzaria": "Orayta",
-    "sefaria and more": "sefaria",
     "sefariaToOtzaria": "sefaria",
     "MoreBooks": "MoreBooks",
     "tashmaToOtzaria": "Tashma",
+    "wiki_jewish_books": "wiki_jewish_books",
 }
 
 
