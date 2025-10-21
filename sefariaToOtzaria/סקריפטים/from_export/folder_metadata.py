@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from .utils import CONFIG, read_csv_file
+from utils import CONFIG, read_csv_file
 
 toc_file_path = Path(CONFIG["sefaria"]["toc_file"])
 folder_metadata_file_path = Path(CONFIG["otzaria"]["folder_metadata_file_path"])
@@ -33,8 +33,9 @@ folder_name_replacements = read_csv_file(folder_name_replacements_file_path)
 data = recursive_register_categories(toc)
 data_copy = data.copy()
 for index, entry in enumerate(data_copy):
-    if entry["title"] in folder_name_replacements:
-        data[index]["title"] = folder_name_replacements[entry["title"]]
+    for key, value in folder_name_replacements.items():
+        if key in entry["title"]:
+            data[index]["title"] = value
 
 with folder_metadata_file_path.open('w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)

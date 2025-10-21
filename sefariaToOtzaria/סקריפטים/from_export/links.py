@@ -8,7 +8,7 @@ from typing import TypedDict
 
 from tqdm import tqdm
 
-from .utils import CONFIG
+from utils import CONFIG
 
 
 class Link(TypedDict):

@@ -1,10 +1,10 @@
 import csv
 from pathlib import Path
 
-from .utils import CONFIG
+from utils import CONFIG
 
-old_books_path = Path(CONFIG["otzaria"]["export_books_path"])
-new_books_path = Path(CONFIG["otzaria"]["old_books_path"])
+old_books_path = Path(CONFIG["otzaria"]["old_books_path"])
+new_books_path = Path(CONFIG["otzaria"]["export_books_path"])
 api_books_path = Path(CONFIG["otzaria"]["api_books_path"])
 
 
@@ -67,7 +67,7 @@ for root, folders, _ in new_books_path.walk(top_down=False):
         if not folder_path.iterdir():
             folder_path.rmdir()
 
-log_file_path = CONFIG["otzaria"]["log_path"]
+log_file_path = Path(CONFIG["otzaria"]["log_path"])
 not_in_new_file_path = log_file_path / "not_in_new.csv"
 with not_in_new_file_path.open("w", encoding="windows-1255", newline="") as f:
     writer = csv.writer(f)

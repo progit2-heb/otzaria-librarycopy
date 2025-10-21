@@ -4,9 +4,9 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 
-from ..otzaria.get_from_export import Book
-from ..otzaria.utils import footnotes, sanitize_filename
-from .utils import CONFIG, read_csv_file
+from utils import *
+from otzaria.get_from_export import Book
+from otzaria.utils import footnotes, sanitize_filename
 
 
 def read_file(file_path: Path) -> set[str]:
@@ -51,7 +51,7 @@ def main(json_folder: Path, schemas_folder: Path, output_folder: Path, lang: str
     for root, _, files in tqdm(json_folder.walk()):
         for file in files:
             file_path = root / file
-            if file_path.parent.name != lang or file != "merged.json":
+            if file_path.parent.name.lower() != lang or file != "merged.json":
                 continue
             try:
                 text_file = file_path
@@ -64,8 +64,13 @@ def main(json_folder: Path, schemas_folder: Path, output_folder: Path, lang: str
                 title = sanitize_filename(metadata["title"])
                 if metadata["title"] in files_black_list or title in files_black_list or original_title in files_black_list or any(author in authors_black_list for author in metadata["heAuthors"]):
                     continue
-                output_path = [sanitize_filename(i) for i in categories]
-                output_path = [folder_name_replacements[i] for i in output_path if i in folder_name_replacements]
+                output_path_temp = [sanitize_filename(i) for i in categories]
+                output_path = []
+                for i in output_path_temp:
+                    for key, value in folder_name_replacements.items():
+                        if key in i:
+                            i = value
+                    output_path.append(i)
                 book_output_folder = Path(output_folder).joinpath(*output_path)
                 book_output_folder.mkdir(parents=True, exist_ok=True)
                 output_file_name = book_output_folder / title
@@ -102,7 +107,6 @@ def main(json_folder: Path, schemas_folder: Path, output_folder: Path, lang: str
                     with json_file.open("w", encoding="utf-8") as f:
                         json.dump(dict_links, f)
             except Exception as e:
-                error_file_path = Path(CONFIG["log_path"]) / "error.txt"
                 error_file_path.parent.mkdir(parents=True, exist_ok=True)
                 with error_file_path.open("a", encoding="utf-8") as f:
                     f.write(f"{file_path} {e}\n")
@@ -119,9 +123,11 @@ files_black_list_file_path = Path(CONFIG["sefaria"]["files_black_list_file_path"
 authors_black_files_list_file_path = Path(CONFIG["sefaria"]["authors_black_files_list_file_path"])
 files_black_list = read_file(files_black_list_file_path)
 authors_black_list = read_file(authors_black_files_list_file_path)
-output_folder = Path(CONFIG["export_books_path"])
+output_folder = Path(CONFIG["otzaria"]["export_books_path"])
 output_folder.mkdir(parents=True, exist_ok=True)
-links_path = Path(CONFIG["export_links_path"])
+links_path = Path(CONFIG["otzaria"]["export_links_path"])
+error_file_path = Path(CONFIG["otzaria"]["log_path"]) / "error.txt"
+error_file_path.parent.mkdir(parents=True, exist_ok=True)
 links_path.mkdir(parents=True, exist_ok=True)
 folder_name_replacements_file_path = Path(CONFIG["otzaria"]["folder_name_replacements_file_path"])
 file_name_replacements_file_path = Path(CONFIG["otzaria"]["file_name_replacements_file_path"])
@@ -132,7 +138,7 @@ refs_list = []
 main(json_folder=json_folder, schemas_folder=schemas_folder,
      output_folder=output_folder, lang=lang)
 df = pd.DataFrame(refs_list)
-df.to_csv(Path(CONFIG["refs_all_file_path"]), index=False)
-metadata_file_path = Path(CONFIG["books_metadata_file_path"])
+df.to_csv(Path(CONFIG["otzaria"]["refs_all_file_path"]), index=False)
+metadata_file_path = Path(CONFIG["otzaria"]["books_metadata_file_path"])
 with metadata_file_path.open("w", encoding="utf-8") as f:
     json.dump(all_metadata, f, ensure_ascii=False, indent=4)
