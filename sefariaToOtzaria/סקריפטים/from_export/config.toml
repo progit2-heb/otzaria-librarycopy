@@ -10,7 +10,7 @@ folder_name_replacements_file_path = "D:\\Users\\Administrator\\Documents\\otzar
 file_name_replacements_file_path = "D:\\Users\\Administrator\\Documents\\otzaria-library\\sefariaToOtzaria\\סקריפטים\\from_export\\ספרים.csv"
 old_books_path = "D:\\Users\\Administrator\\Documents\\otzaria-library\\sefariaToOtzaria\\sefaria_export\\ספרים\\אוצריא"
 api_books_path = "D:\\Users\\Administrator\\Documents\\otzaria-library\\sefariaToOtzaria\\sefaria_api\\ספרים\\אוצריא"
-delete_api_files = false
+delete_api_files = true
 
 [sefaria]
 toc_file = "\\\\wsl.localhost\\Ubuntu\\root\\Sefaria-Export\\table_of_contents.json"
