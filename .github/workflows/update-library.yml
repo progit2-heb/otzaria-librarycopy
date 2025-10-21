@@ -44,19 +44,67 @@ jobs:
         run: |
           python sync_and_merge_folders.py
 
-      - name: Generate Files Manifest
+      - name: Generate Files Manifest (Old format - for backward compatibility)
         run: |
           echo "{" > files_manifest.json
           find . \( -path "./metadata.json" -o -path "./אוצריא/*" -o -path "./links/*" \) -type f \
           ! -path "./.git/*" \
           ! -path "./.github/*" \
           ! -name "files_manifest.json" \
+          ! -name "files_manifest_new.json" \
           -exec sh -c '
             path="${1#./}"
             hash=$(sha256sum "$1" | cut -d" " -f1)
             echo "\"$path\": {\"hash\": \"$hash\"}"
           ' sh {} \; | sed "$ ! s/$/,/" >> files_manifest.json
           echo "}" >> files_manifest.json
+
+      - name: Generate New Files Manifest (New format - with full paths from sources)
+        run: |
+          # This manifest contains full paths from source directories (e.g., sefariaToOtzaria/sefaria_export/ספרים/אוצריא/...)
+          # The client application will normalize these paths to local paths (אוצריא/..., links/...)
+          # This approach eliminates the need for folder merging and reduces duplication
+          echo "{" > files_manifest_new.json
+          
+          # Add metadata.json (root file)
+          if [ -f "./metadata.json" ]; then
+            hash=$(sha256sum "./metadata.json" | cut -d" " -f1)
+            echo "\"metadata.json\": {\"hash\": \"$hash\"}," >> files_manifest_new.json
+          fi
+          
+          # Find all files in source directories (אוצריא files)
+          find . \( \
+            -path "./Ben-YehudaToOtzaria/ספרים/אוצריא/*" -o \
+            -path "./DictaToOtzaria/ספרים/ערוך/אוצריא/*" -o \
+            -path "./OnYourWayToOtzaria/ספרים/אוצריא/*" -o \
+            -path "./OraytaToOtzaria/ספרים/אוצריא/*" -o \
+            -path "./tashmaToOtzaria/ספרים/אוצריא/*" -o \
+            -path "./sefariaToOtzaria/sefaria_export/ספרים/אוצריא/*" -o \
+            -path "./sefariaToOtzaria/sefaria_api/ספרים/אוצריא/*" -o \
+            -path "./MoreBooks/ספרים/אוצריא/*" -o \
+            -path "./wiki_jewish_books/ספרים/אוצריא/*" \
+          \) -type f \
+          ! -path "./.git/*" \
+          ! -path "./.github/*" \
+          -exec sh -c '
+            path="${1#./}"
+            hash=$(sha256sum "$1" | cut -d" " -f1)
+            echo "\"$path\": {\"hash\": \"$hash\"}"
+          ' sh {} \; | sed "$ ! s/$/,/" >> files_manifest_new.json
+          
+          # Find all link files
+          find . -path "./sefariaToOtzaria/sefaria_export/links/*" -type f \
+          ! -path "./.git/*" \
+          ! -path "./.github/*" \
+          -exec sh -c '
+            path="${1#./}"
+            hash=$(sha256sum "$1" | cut -d" " -f1)
+            echo "\"$path\": {\"hash\": \"$hash\"}"
+          ' sh {} \; | sed "$ ! s/$/,/" >> files_manifest_new.json
+          
+          # Remove the trailing comma from the last entry and close the JSON
+          sed -i '$ s/,$//' files_manifest_new.json
+          echo "}" >> files_manifest_new.json
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
@@ -75,7 +123,7 @@ jobs:
 
       - name: Create Release Archive
         run: |
-          zip -r otzaria_latest.zip אוצריא links files_manifest.json metadata.json
+          zip -r otzaria_latest.zip אוצריא links files_manifest.json files_manifest_new.json metadata.json
 
       - name: Delete existing 'latest' release and tag
         continue-on-error: true
