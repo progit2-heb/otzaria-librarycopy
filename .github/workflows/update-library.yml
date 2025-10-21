@@ -60,10 +60,7 @@ jobs:
           echo "}" >> files_manifest.json
 
       - name: Generate New Files Manifest (New format - with full paths from sources)
-        run: |
-          # This manifest contains full paths from source directories (e.g., sefariaToOtzaria/sefaria_export/ספרים/אוצריא/...)
-          # The client application will normalize these paths to local paths (אוצריא/..., links/...)
-          # This approach eliminates the need for folder merging and reduces duplication
+        run: |          
           echo "{" > files_manifest_new.json
           
           # Add metadata.json (root file)
@@ -72,7 +69,7 @@ jobs:
             echo "\"metadata.json\": {\"hash\": \"$hash\"}," >> files_manifest_new.json
           fi
           
-          # Find all files in source directories (אוצריא files)
+          # Find all files in source directories (אוצריא files from all sources)
           find . \( \
             -path "./Ben-YehudaToOtzaria/ספרים/אוצריא/*" -o \
             -path "./DictaToOtzaria/ספרים/ערוך/אוצריא/*" -o \
@@ -86,21 +83,31 @@ jobs:
           \) -type f \
           ! -path "./.git/*" \
           ! -path "./.github/*" \
-          -exec sh -c '
-            path="${1#./}"
-            hash=$(sha256sum "$1" | cut -d" " -f1)
-            echo "\"$path\": {\"hash\": \"$hash\"}"
-          ' sh {} \; | sed "$ ! s/$/,/" >> files_manifest_new.json
+          2>/dev/null | while read -r file; do
+            path="${file#./}"
+            hash=$(sha256sum "$file" | cut -d" " -f1)
+            echo "\"$path\": {\"hash\": \"$hash\"},"
+          done >> files_manifest_new.json
           
-          # Find all link files
-          find . -path "./sefariaToOtzaria/sefaria_export/links/*" -type f \
+          # Find all link files from all sources
+          find . \( \
+            -path "./Ben-YehudaToOtzaria/links/*" -o \
+            -path "./DictaToOtzaria/links/*" -o \
+            -path "./OnYourWayToOtzaria/links/*" -o \
+            -path "./OraytaToOtzaria/links/*" -o \
+            -path "./tashmaToOtzaria/links/*" -o \
+            -path "./sefariaToOtzaria/sefaria_export/links/*" -o \
+            -path "./sefariaToOtzaria/sefaria_api/links/*" -o \
+            -path "./MoreBooks/links/*" -o \
+            -path "./wiki_jewish_books/links/*" \
+          \) -type f \
           ! -path "./.git/*" \
           ! -path "./.github/*" \
-          -exec sh -c '
-            path="${1#./}"
-            hash=$(sha256sum "$1" | cut -d" " -f1)
-            echo "\"$path\": {\"hash\": \"$hash\"}"
-          ' sh {} \; | sed "$ ! s/$/,/" >> files_manifest_new.json
+          2>/dev/null | while read -r file; do
+            path="${file#./}"
+            hash=$(sha256sum "$file" | cut -d" " -f1)
+            echo "\"$path\": {\"hash\": \"$hash\"},"
+          done >> files_manifest_new.json
           
           # Remove the trailing comma from the last entry and close the JSON
           sed -i '$ s/,$//' files_manifest_new.json

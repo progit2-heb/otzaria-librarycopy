@@ -79,7 +79,7 @@ if os.path.exists(os.path.join("library_csv", f"{library_ver}.csv")):
         if all(row in old_csv_values for row in new_csv_content) and all(row in new_csv_content for row in old_csv_values):
             dif = False
 if dif:
-    with open("SourcesBooks.csv", "r", encoding="utf-8") as new_csv_file:
+    with open("SourcesBooks.csv", "w", encoding="utf-8") as new_csv_file:
         writer = csv.writer(new_csv_file)
         writer.writerows(new_csv_content)
     csv_file_path = os.path.join("אוצריא", "אודות התוכנה", "SourcesBooks.csv")
