@@ -1,6 +1,7 @@
 import csv
 import os
 import shutil
+from hmac import new
 
 mapping = {
     "Ben-YehudaToOtzaria": "Ben-Yehuda",
@@ -14,7 +15,7 @@ mapping = {
 }
 
 
-def sync_files(folder_path, target_folder_path, csv_writer):
+def sync_files(folder_path, target_folder_path):
     source_key = folder_path.split(os.sep)[0]
     original_folder = mapping.get(source_key, source_key)
     for root, _, files in os.walk(folder_path):
@@ -29,7 +30,7 @@ def sync_files(folder_path, target_folder_path, csv_writer):
                 continue
             with open(target_file_path, "r", encoding="utf-8") as f:
                 content = f.read().split("\n")
-            csv_writer.writerow([file, target_file_path, original_folder, str(len(content))])
+            yield [file, target_file_path, original_folder, str(len(content))]
 
 
 def sync_folders(folder_path, folders_to_update):
@@ -65,21 +66,30 @@ folders = (
     "wiki_jewish_books/ספרים/אוצריא",
 )
 
-with open("SourcesBooks.csv", "w", newline="", encoding="utf-8") as csvfile:
-    csv_writer = csv.writer(csvfile)
-    csv_writer.writerow(["שם הקובץ", "נתיב הקובץ", "תיקיית המקור", "מספר שורות"])
-    for folder in folders:
-        sync_files(folder, target_folder, csv_writer)
+new_csv_content = [["שם הקובץ", "נתיב הקובץ", "תיקיית המקור", "מספר שורות"]]
+dif = True
+for folder in folders:
+    new_csv_content.append(sync_files(folder, target_folder))
+
+if os.path.exists(os.path.join("library_csv", f"{library_ver}.csv")):
+    with open(os.path.join("library_csv", f"{library_ver}.csv"), "r", encoding="utf-8") as old_csvfile:
+        old_csv_reader = csv.reader(old_csvfile)
+        old_csv_values = list(old_csv_reader)
+        if all(row in old_csv_values for row in new_csv_content) and all(row in new_csv_content for row in old_csv_values):
+            dif = False
+if dif:
+    with open("SourcesBooks.csv", "r", encoding="utf-8") as new_csv_file:
+        writer = csv.writer(new_csv_file)
+        writer.writerows(new_csv_content)
+    csv_file_path = os.path.join("אוצריא", "אודות התוכנה", "SourcesBooks.csv")
+    shutil.copy("SourcesBooks.csv", csv_file_path)
+    os.makedirs("library_csv", exist_ok=True)
+    os.rename("SourcesBooks.csv", os.path.join("library_csv", f"{library_ver + 1}.csv"))
+    with open(ver_file_path, "w", encoding="utf-8") as f:
+        f.write(str(library_ver + 1))
 
 for folder in folders:
     sync_folders(folder, folders)
-
-csv_file_path = os.path.join("אוצריא", "אודות התוכנה", "SourcesBooks.csv")
-shutil.copy("SourcesBooks.csv", csv_file_path)
-os.makedirs("library_csv", exist_ok=True)
-os.rename("SourcesBooks.csv", os.path.join("library_csv", f"{library_ver + 1}.csv"))
-with open(ver_file_path, "w", encoding="utf-8") as f:
-    f.write(str(library_ver + 1))
 
 
 all_dicta_files = []
