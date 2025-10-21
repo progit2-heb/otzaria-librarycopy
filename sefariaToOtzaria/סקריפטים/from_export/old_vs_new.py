@@ -81,7 +81,7 @@ with not_in_old_file_path.open("w", encoding="windows-1255", newline="") as f:
     for key, value in not_in_old.items():
         writer.writerow([key, value])
 
-if not delete_api_files:
+if not delete_api_files and in_api_dict:
     in_api_file_path = log_file_path / "in_api.csv"
     with in_api_file_path.open("w", encoding="windows-1255", newline="") as f:
         writer = csv.writer(f)
