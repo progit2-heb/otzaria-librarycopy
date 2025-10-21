@@ -69,7 +69,8 @@ folders = (
 new_csv_content = [["שם הקובץ", "נתיב הקובץ", "תיקיית המקור", "מספר שורות"]]
 dif = True
 for folder in folders:
-    new_csv_content.append(next(sync_files(folder, target_folder)))
+    for i in sync_files(folder, target_folder):
+        new_csv_content.append(i)
 
 if os.path.exists(os.path.join("library_csv", f"{library_ver}.csv")):
     with open(os.path.join("library_csv", f"{library_ver}.csv"), "r", encoding="utf-8") as old_csvfile:
