@@ -1,6 +1,6 @@
+import csv
 import os
 import shutil
-import csv
 
 mapping = {
     "Ben-YehudaToOtzaria": "Ben-Yehuda",
@@ -62,6 +62,7 @@ folders = (
     "sefariaToOtzaria/sefaria_export/ספרים/אוצריא",
     "sefariaToOtzaria/sefaria_api/ספרים/אוצריא",
     "MoreBooks/ספרים/אוצריא",
+    "wiki_jewish_books/ספרים/אוצריא",
 )
 
 with open("SourcesBooks.csv", "w", newline="", encoding="utf-8") as csvfile:
